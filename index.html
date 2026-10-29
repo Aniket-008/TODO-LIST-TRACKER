@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="system">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>TodoTrack — Smart Task & Productivity App</title>
+  <meta name="description" content="A modern productivity web app with a Floating Dynamic Island that can float over other websites and desktop applications.">
+  
+  <!-- PWA & Mobile Web App Meta Tags -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#4f46e5">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="TodoTrack">
+  <link rel="apple-touch-icon" href="icon-192.png">
+
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- =========================================================================
+       FLOATING DYNAMIC ISLAND (Floats within tab & can pop out over all apps)
+       ========================================================================= -->
+  <aside id="floatingIsland" class="dynamic-island collapsed" aria-label="Floating Dynamic Island">
+    <!-- Collapsed State: Interactive Pill -->
+    <div class="island-pill-view" id="islandPillView" tabindex="0" role="button" aria-expanded="false" aria-label="Expand Quick Action Island">
+      <span class="island-pulse-dot" aria-hidden="true"></span>
+      <div class="island-pill-info">
+        <span class="island-pill-brand">Island</span>
+        <span class="island-pill-count" id="islandPendingCount">0 pending</span>
+      </div>
+      <div class="island-pill-actions">
+        <button class="island-pill-action-btn" id="islandQuickAddBtn" title="Quick Add Task" aria-label="Quick Add Task">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+        </button>
+        <button class="island-pill-action-btn" id="islandViewTasksBtn" title="View & Complete Tasks" aria-label="View & Complete Tasks">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="8" y1="6" x2="21" y2="6"></line>
+            <line x1="8" y1="12" x2="21" y2="12"></line>
+            <line x1="8" y1="18" x2="21" y2="18"></line>
+            <line x1="3" y1="6" x2="3.01" y2="6"></line>
+            <line x1="3" y1="12" x2="3.01" y2="12"></line>
+            <line x1="3" y1="18" x2="3.01" y2="18"></line>
+          </svg>
+        </button>
+        <!-- Pop Out / Always on Top Button -->
+        <button class="island-pill-action-btn" id="islandPipBtn" title="Float Island over other websites & desktop apps (Always on Top)" aria-label="Float Island Over Other Apps">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+            <rect x="12" y="10" width="8" height="8" rx="1" fill="currentColor" fill-opacity="0.3"></rect>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Expanded State: Morphing Panel -->
+    <div class="island-expanded-view" id="islandExpandedView">
+      <!-- Island Top Navigation Bar -->
+      <div class="island-header">
+        <div class="island-nav-tabs">
+          <button class="island-nav-btn active" id="islandTabAdd" data-mode="add">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <span>Quick Add</span>
+          </button>
+          <button class="island-nav-btn" id="islandTabList" data-mode="list">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            <span>My Tasks (<span id="islandTabCount">0</span>)</span>
+          </button>
+        </div>
+        
+        <div class="island-header-actions">
+          <button class="island-icon-btn" id="islandExpandedPipBtn" title="Pop out island to float over other apps" aria-label="Pop out island">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+              <rect x="12" y="10" width="8" height="8" rx="1" fill="currentColor" fill-opacity="0.3"></rect>
+            </svg>
+          </button>
+          <button class="island-close-btn" id="islandCollapseBtn" title="Minimize to Island Pill" aria-label="Minimize island">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Island Section A: Instant Task Add Form -->
+      <div class="island-pane" id="islandPaneAdd">
+        <form id="islandAddForm" class="island-add-form">
+          <div class="island-input-row">
+            <input 
+              type="text" 
+              id="islandTaskInput" 
+              class="island-text-input" 
+              placeholder="What needs to be done? Press Enter..." 
+              maxlength="160"
+              autocomplete="off"
+            />
+            <button type="submit" class="island-send-btn" title="Add directly to app">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+              </svg>
+            </button>
+          </div>
+          
+          <div class="island-options-row">
+            <div class="island-priority-group" role="group" aria-label="Select Priority">
+              <button type="button" class="island-prio-btn" data-priority="low">Low</button>
+              <button type="button" class="island-prio-btn active" data-priority="medium">Medium</button>
+              <button type="button" class="island-prio-btn" data-priority="high">High</button>
+            </div>
+            <span class="island-hint-text">Press <kbd>Enter</kbd> to add</span>
+          </div>
+        </form>
+      </div>
+
+      <!-- Island Section B: Interactive Task List & Quick Completion -->
+      <div class="island-pane" id="islandPaneList" style="display: none;">
+        <div class="island-list-header">
+          <span class="island-summary-tag" id="islandCompletionStats">0 of 0 completed</span>
+          <div class="island-filters-mini">
+            <button class="island-filter-chip active" data-filter="all">All</button>
+            <button class="island-filter-chip" data-filter="active">Active</button>
+            <button class="island-filter-chip" data-filter="completed">Done</button>
+          </div>
+        </div>
+
+        <ul class="island-task-items" id="islandTaskListItems">
+          <!-- Dynamically populated tasks inside the island with live checkmarks -->
+        </ul>
+
+        <div class="island-list-footer">
+          <button type="button" class="island-footer-link" id="islandAddMoreLink">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add another task
+          </button>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- =========================================================================
+       MAIN WEB APPLICATION
+       ========================================================================= -->
+  <div class="app-wrapper">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="header-left">
+        <div class="logo">
+          <div class="logo-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/>
+              <path d="m9 12 2 2 4-4"/>
+            </svg>
+          </div>
+          <div>
+            <div class="logo-title-row">
+              <h1 class="logo-title">TodoTrack</h1>
+              <span class="app-badge">Web App</span>
+            </div>
+            <p class="header-date" id="currentDateDisplay">Today</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <!-- Float Island Button -->
+        <button id="floatIslandBtn" class="btn btn-secondary btn-sm" title="Float Island over all desktop apps & websites">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+            <rect x="12" y="10" width="8" height="8" rx="1" fill="currentColor" fill-opacity="0.3"></rect>
+          </svg>
+          <span>Float Over Apps</span>
+        </button>
+
+        <!-- Install PWA Button (Visible when installable) -->
+        <button id="installAppBtn" class="btn btn-secondary btn-sm" style="display:none;" title="Install TodoTrack as Web App">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          <span>Install App</span>
+        </button>
+
+        <!-- Theme Switcher -->
+        <button id="themeToggleBtn" class="icon-btn" title="Toggle theme (Light / Dark)" aria-label="Toggle theme">
+          <svg id="themeIconDark" class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+          </svg>
+          <svg id="themeIconLight" class="icon" style="display:none;" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4"/>
+            <path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="main-content">
+      <!-- Quick Float Banner -->
+      <div class="island-cross-app-banner">
+        <div class="banner-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+            <rect x="12" y="10" width="8" height="8" rx="1"></rect>
+          </svg>
+        </div>
+        <div class="banner-text">
+          <strong>Cross-App Floating Island:</strong>
+          <span>Float this island over other websites, Word, VS Code, or games anytime by clicking <strong>"Float Over Apps"</strong> above, or load our Chrome/Edge extension!</span>
+        </div>
+      </div>
+
+      <!-- Progress & Productivity Overview Card -->
+      <section class="card progress-card" aria-label="Task progress summary">
+        <div class="progress-header">
+          <div>
+            <h2 class="section-title">Today's Progress</h2>
+            <p class="progress-subtext" id="progressSubtitle">Keep moving forward!</p>
+          </div>
+          <div class="progress-badge">
+            <span id="completionPercentage">0%</span>
+          </div>
+        </div>
+
+        <div class="progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progressBarWrapper">
+          <div class="progress-fill" id="progressBarFill" style="width: 0%;"></div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-pill">
+            <span class="stat-value" id="totalTasksCount">0</span>
+            <span class="stat-label">Total</span>
+          </div>
+          <div class="stat-pill">
+            <span class="stat-value active-val" id="activeTasksCount">0</span>
+            <span class="stat-label">Pending</span>
+          </div>
+          <div class="stat-pill">
+            <span class="stat-value completed-val" id="completedTasksCount">0</span>
+            <span class="stat-label">Completed</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Add Task Form Card -->
+      <section class="card add-task-card">
+        <form id="todoForm" class="todo-form">
+          <div class="input-primary-row">
+            <div class="input-field-wrapper">
+              <input 
+                type="text" 
+                id="taskInput" 
+                class="task-input" 
+                placeholder="What needs to be accomplished today?" 
+                required 
+                autocomplete="off"
+                maxlength="160"
+              />
+            </div>
+            <button type="submit" class="btn btn-primary" id="addBtn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              <span>Add Task</span>
+            </button>
+          </div>
+
+          <!-- Metadata options (Category, Priority, Due Date) -->
+          <div class="input-options-row">
+            <div class="option-group">
+              <label for="categorySelect">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3.85 8.62 4.9-4.9A3 3 0 0 1 10.87 2.85l7.07.03a1 1 0 0 1 1 1l.03 7.07a3 3 0 0 1-.87 2.12l-4.9 4.9a3 3 0 0 1-4.25 0l-5.1-5.1a3 3 0 0 1 0-4.25Z"/><path d="m14 7 3 3"/></svg>
+                Category
+              </label>
+              <select id="categorySelect" class="select-input">
+                <option value="General">General</option>
+                <option value="Work">Work</option>
+                <option value="Personal">Personal</option>
+                <option value="Study">Study</option>
+                <option value="Health">Health</option>
+                <option value="Finance">Finance</option>
+              </select>
+            </div>
+
+            <div class="option-group">
+              <label for="prioritySelect">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+                Priority
+              </label>
+              <select id="prioritySelect" class="select-input">
+                <option value="medium" selected>Medium</option>
+                <option value="high">High</option>
+                <option value="low">Low</option>
+              </select>
+            </div>
+
+            <div class="option-group">
+              <label for="dueDateInput">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                Due Date
+              </label>
+              <input type="date" id="dueDateInput" class="date-input" />
+            </div>
+          </div>
+        </form>
+      </section>
+
+      <!-- Filtering, Sorting & Search Toolbar -->
+      <section class="toolbar-section">
+        <div class="filter-tabs" role="tablist">
+          <button class="filter-tab active" data-filter="all" role="tab" aria-selected="true">
+            All <span class="badge" id="badgeAll">0</span>
+          </button>
+          <button class="filter-tab" data-filter="active" role="tab" aria-selected="false">
+            Active <span class="badge" id="badgeActive">0</span>
+          </button>
+          <button class="filter-tab" data-filter="completed" role="tab" aria-selected="false">
+            Completed <span class="badge" id="badgeCompleted">0</span>
+          </button>
+        </div>
+
+        <div class="toolbar-controls">
+          <div class="search-box">
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <input type="text" id="searchInput" placeholder="Search tasks (or press /)..." class="search-input" />
+            <button id="clearSearchBtn" class="clear-search-btn" title="Clear search" style="display:none;">&times;</button>
+          </div>
+
+          <div class="sort-wrapper">
+            <label for="sortBySelect" class="sr-only">Sort By</label>
+            <select id="sortBySelect" class="sort-select" title="Sort tasks by">
+              <option value="created-desc">Newest First</option>
+              <option value="created-asc">Oldest First</option>
+              <option value="due-date">Due Date</option>
+              <option value="priority-desc">Priority (High to Low)</option>
+              <option value="alphabetical">Title (A-Z)</option>
+            </select>
+          </div>
+
+          <button id="clearCompletedBtn" class="btn btn-secondary btn-sm" title="Remove completed tasks">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            </svg>
+            <span>Clear Completed</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Task Items List -->
+      <section class="task-list-section">
+        <ul id="todoList" class="todo-list" aria-live="polite">
+          <!-- Populated dynamically via app.js -->
+        </ul>
+
+        <!-- Empty State View -->
+        <div id="emptyState" class="empty-state" style="display: none;">
+          <div class="empty-state-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="9" y1="15" x2="15" y2="15"/>
+            </svg>
+          </div>
+          <h3 class="empty-title" id="emptyStateTitle">No tasks found</h3>
+          <p class="empty-desc" id="emptyStateDesc">Add your first task above or tap the Dynamic Island at the top!</p>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p>TodoTrack Web App &bull; Press <kbd>Ctrl+K</kbd> to quick-add &bull; Click "Float Over Apps" to float above any software</p>
+      <div class="footer-links">
+        <button id="exportDataBtn" class="link-btn">Export JSON</button>
+        <span>&bull;</span>
+        <button id="importDataBtn" class="link-btn">Import Data</button>
+        <input type="file" id="importFileInput" accept=".json" style="display:none;" />
+      </div>
+    </footer>
+  </div>
+
+  <!-- Edit Task Modal -->
+  <div id="editModal" class="modal-backdrop" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="editModalTitle">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="editModalTitle" class="modal-title">Edit Task</h3>
+        <button id="closeModalBtn" class="icon-btn close-btn" aria-label="Close modal">&times;</button>
+      </div>
+      <form id="editForm" class="modal-form">
+        <input type="hidden" id="editTaskId" />
+        <div class="form-group">
+          <label for="editTaskTitle">Task Description</label>
+          <input type="text" id="editTaskTitle" class="modal-input" required maxlength="160" />
+        </div>
+        <div class="modal-grid">
+          <div class="form-group">
+            <label for="editCategory">Category</label>
+            <select id="editCategory" class="select-input">
+              <option value="General">General</option>
+              <option value="Work">Work</option>
+              <option value="Personal">Personal</option>
+              <option value="Study">Study</option>
+              <option value="Health">Health</option>
+              <option value="Finance">Finance</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="editPriority">Priority</label>
+            <select id="editPriority" class="select-input">
+              <option value="high">High</option>
+              <option value="medium">Medium</option>
+              <option value="low">Low</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="editDueDate">Due Date</label>
+            <input type="date" id="editDueDate" class="date-input" />
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" id="cancelEditBtn" class="btn btn-secondary">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="toast-container" aria-live="assertive"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

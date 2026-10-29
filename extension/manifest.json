@@ -1,0 +1,23 @@
+{
+  "manifest_version": 3,
+  "name": "TodoTrack — Floating Dynamic Island",
+  "version": "1.0.0",
+  "description": "Floating Island that floats over any website for instant task capture, viewing, and completion without visiting the todo website.",
+  "permissions": [
+    "storage"
+  ],
+  "action": {
+    "default_title": "TodoTrack Dynamic Island"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_end"
+    }
+  ],
+  "icons": {
+    "192": "icon-192.png",
+    "512": "icon-512.png"
+  }
+}
