@@ -59,3 +59,13 @@ A standalone, frameless desktop widget that floats at the top of your Windows mo
 | <kbd>Enter</kbd> | Any Island Form | Submit and save task |
 | <kbd>/</kbd> | Web App | Focus search bar |
 | <kbd>Escape</kbd> | Anywhere | Collapse island or close dialogs |
+
+---
+
+## Collaboration Log
+
+- **Partner:** No external partner — this assignment was completed independently.
+- **GitHub username:** [@Aniket-008](https://github.com/Aniket-008) (repository owner and individual contributor).
+- **What was built:** Added a reusable JavaScript `greet()` function in `app.js` and connected it to the TodoTrack startup notification so the app displays a welcome message.
+- **One thing learned:** How to define and call a reusable JavaScript function, then track and publish code and documentation changes as separate Git commits.
+
