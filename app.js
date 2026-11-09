@@ -143,6 +143,11 @@
   const islandMiniFilters = document.querySelectorAll('.island-filter-chip');
   const islandAddMoreLink = document.getElementById('islandAddMoreLink');
 
+  // --- Greeting Helper ---
+  function greet(name = 'to TodoTrack') {
+    return `Welcome ${name}!`;
+  }
+
   // --- Date Helpers ---
   function getTodayDateString() {
     const today = new Date();
@@ -1025,6 +1030,7 @@
     loadTodos();
     initEventListeners();
     render();
+    showToast(greet(), 'success');
   }
 
   if (document.readyState === 'loading') {
